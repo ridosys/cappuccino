@@ -1,0 +1,207 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-button: var(--button);
+  --color-header: var(--header);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(0.995 0.003 260);
+  --foreground: oklch(0.18 0.02 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 264);
+  --primary: oklch(0.47 0.19 264);
+  --primary-foreground: oklch(0.985 0.005 264);
+  --secondary: oklch(0.96 0.012 264);
+  --secondary-foreground: oklch(0.32 0.05 264);
+  --muted: oklch(0.965 0.008 264);
+  --muted-foreground: oklch(0.52 0.025 264);
+  --accent: oklch(0.94 0.035 264);
+  --accent-foreground: oklch(0.34 0.09 264);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.91 0.012 264);
+  --input: oklch(0.85 0.014 264);
+  --ring: color-mix(in oklch, var(--primary) 45%, transparent);
+  --chart-1: oklch(0.6 0.19 264);
+  --chart-2: oklch(0.72 0.15 200);
+  --chart-3: oklch(0.75 0.16 70);
+  --chart-4: oklch(0.65 0.2 320);
+  --chart-5: oklch(0.55 0.18 150);
+  --radius: 0.75rem;
+  --button: var(--primary);
+  --header: var(--background);
+  --sidebar: oklch(0.16 0.03 264);
+  --sidebar-foreground: oklch(0.93 0.01 264);
+  --sidebar-primary: oklch(0.6 0.18 264);
+  --sidebar-primary-foreground: oklch(0.98 0.005 264);
+  --sidebar-accent: oklch(0.24 0.03 264);
+  --sidebar-accent-foreground: oklch(0.95 0.01 264);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: color-mix(in oklch, var(--sidebar-primary) 50%, transparent);
+}
+
+.dark {
+  --background: oklch(0.15 0.016 264);
+  --foreground: oklch(0.96 0.006 264);
+  --card: oklch(0.19 0.018 264);
+  --card-foreground: oklch(0.96 0.006 264);
+  --popover: oklch(0.19 0.018 264);
+  --popover-foreground: oklch(0.96 0.006 264);
+  --primary: oklch(0.72 0.15 264);
+  --primary-foreground: oklch(0.15 0.02 264);
+  --secondary: oklch(0.26 0.02 264);
+  --secondary-foreground: oklch(0.95 0.006 264);
+  --muted: oklch(0.24 0.018 264);
+  --muted-foreground: oklch(0.67 0.02 264);
+  --accent: oklch(0.28 0.035 264);
+  --accent-foreground: oklch(0.95 0.01 264);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: color-mix(in oklch, var(--primary) 50%, transparent);
+  --chart-1: oklch(0.7 0.18 264);
+  --chart-2: oklch(0.75 0.14 200);
+  --chart-3: oklch(0.78 0.15 70);
+  --chart-4: oklch(0.7 0.18 320);
+  --chart-5: oklch(0.65 0.16 150);
+  --button: var(--primary);
+  --header: var(--background);
+  --sidebar: oklch(0.12 0.018 264);
+  --sidebar-foreground: oklch(0.93 0.01 264);
+  --sidebar-primary: oklch(0.72 0.15 264);
+  --sidebar-primary-foreground: oklch(0.15 0.02 264);
+  --sidebar-accent: oklch(0.22 0.025 264);
+  --sidebar-accent-foreground: oklch(0.95 0.01 264);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: color-mix(in oklch, var(--sidebar-primary) 50%, transparent);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* Native number input spinners are visually inconsistent across
+     browsers and clash with the app's flat input style. */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  /* Recolor the native date-picker icon to match the theme instead of
+     the browser's fixed dark glyph, which is invisible in dark mode. */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    opacity: 0.6;
+    filter: var(--date-icon-filter, none);
+    transition: opacity 0.15s ease;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    --date-icon-filter: invert(1);
+  }
+}
+
+@page {
+  margin: 12mm;
+}
+
+@media print {
+  html {
+    font-family: Tahoma, Arial, sans-serif;
+  }
+
+  [data-slot="sidebar"] {
+    display: none !important;
+  }
+
+  [data-report-print] [data-slot="table-container"] {
+    overflow: visible !important;
+  }
+
+  [data-report-print] [data-slot="table-header"] {
+    display: table-header-group;
+  }
+
+  [data-report-print] [data-slot="table-row"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body.report-export-printing > *:not([data-export-print-table]) {
+    display: none !important;
+  }
+
+  [data-export-print-table] {
+    display: block !important;
+  }
+
+  [data-export-print-table] thead {
+    display: table-header-group;
+  }
+
+  [data-export-print-table] tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

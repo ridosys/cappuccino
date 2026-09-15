@@ -1,0 +1,677 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id                          String                @id @default(cuid())
+  name                        String
+  email                       String                @unique
+  password                    String
+  isActive                    Boolean               @default(true)
+  roleId                      String
+  role                        Role                  @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  createdAt                   DateTime              @default(now())
+  updatedAt                   DateTime              @updatedAt
+  salesReturns                SalesReturn[]
+  purchaseReturns             PurchaseReturn[]
+  createdInvoices             Invoice[]
+  createdOrders               Order[]
+  createdPurchaseOrders       PurchaseOrder[]
+  createdSuppliers            Supplier[]
+  createdCustomers            Customer[]
+  createdInventoryMovements   InventoryMovement[]
+  createdProducts             Product[]
+  createdBrands               Brand[]
+  createdCategories           Category[]
+  createdExpenses             Expense[]
+  createdPriceHistory         ProductPriceHistory[]
+  uploadedPurchaseAttachments PurchaseAttachment[]
+
+  @@index([roleId])
+}
+
+enum PermissionKey {
+  PRODUCTS_VIEW
+  PRODUCTS_MANAGE
+  ORDERS_VIEW
+  ORDERS_MANAGE
+  CUSTOMERS_VIEW
+  CUSTOMERS_MANAGE
+  INVENTORY_VIEW
+  INVENTORY_MANAGE
+  PURCHASES_VIEW
+  PURCHASES_MANAGE
+  INVOICES_VIEW
+  INVOICES_MANAGE
+  SUPPLIERS_VIEW
+  SUPPLIERS_MANAGE
+  EXPENSES_VIEW
+  EXPENSES_MANAGE
+  REPORTS_VIEW
+  REPORTS_MANAGE
+  RETURNS_VIEW
+  RETURNS_MANAGE
+  USERS_MANAGE
+  SETTINGS_MANAGE
+  DASHBOARD_VIEW
+  POS_VIEW
+  POS_MANAGE
+}
+
+model Role {
+  id           String           @id @default(cuid())
+  name         String           @unique
+  isSystem     Boolean          @default(false)
+  isFullAccess Boolean          @default(false)
+  permissions  RolePermission[]
+  admins       Admin[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model RolePermission {
+  id         String        @id @default(cuid())
+  roleId     String
+  role       Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission PermissionKey
+
+  @@unique([roleId, permission])
+}
+
+model SystemSettings {
+  id           String   @id @default(cuid())
+  appName      String?
+  appShortName String?
+  logoUrl      String?
+  logoPublicId String?
+  colorsLight  Json?
+  colorsDark   Json?
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id             String     @id @default(cuid())
+  name           String
+  slug           String     @unique
+  imagePublicId  String?
+  imageSecureUrl String?
+  parentId       String?
+  parent         Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children       Category[] @relation("CategoryTree")
+  products       Product[]
+  createdById    String?
+  createdBy      Admin?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([createdById])
+}
+
+model Brand {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  logoUrl      String?
+  logoPublicId String?
+  products     Product[]
+  createdById  String?
+  createdBy    Admin?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([createdById])
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Product {
+  id                  String                @id @default(cuid())
+  name                String
+  slug                String                @unique
+  sku                 String                @unique
+  barcode             String?               @unique
+  description         String?
+  categoryId          String
+  category            Category              @relation(fields: [categoryId], references: [id])
+  brandId             String?
+  brand               Brand?                @relation(fields: [brandId], references: [id])
+  quantity            Decimal               @default(0) @db.Decimal(12, 3)
+  minStockLevel       Decimal               @default(0) @db.Decimal(12, 3)
+  price1              Decimal               @default(0) @db.Decimal(12, 4)
+  price2              Decimal               @default(0) @db.Decimal(12, 4)
+  price3              Decimal               @default(0) @db.Decimal(12, 4)
+  purchasePrice       Decimal               @default(0) @db.Decimal(12, 4)
+  weight              Decimal?              @default(0) @db.Decimal(10, 3)
+  status              ProductStatus         @default(ACTIVE)
+  images              ProductImage[]
+  orderItems          OrderItem[]
+  movements           InventoryMovement[]
+  priceHistory        ProductPriceHistory[]
+  purchaseItems       PurchaseOrderItem[]
+  invoiceItems        InvoiceItem[]
+  salesReturnItems    SalesReturnItem[]
+  purchaseReturnItems PurchaseReturnItem[]
+  damagedQuantity     Decimal               @default(0) @db.Decimal(12, 3)
+  defectiveQuantity   Decimal               @default(0) @db.Decimal(12, 3)
+  createdById         String?
+  createdBy           Admin?                @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([createdById])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  publicId  String
+  secureUrl String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+model Customer {
+  id             String                   @id @default(cuid())
+  name           String
+  nameNormalized String
+  phone          String
+  email          String?
+  address        String?
+  notes          String?
+  imageUrl       String?
+  imagePublicId  String?
+  balance        Decimal                  @default(0) @db.Decimal(10, 2)
+  isFavorite     Boolean                  @default(false)
+  orders         Order[]
+  invoices       Invoice[]
+  balanceHistory CustomerBalanceHistory[]
+  salesReturns   SalesReturn[]
+  createdById    String?
+  createdBy      Admin?                   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  @@index([createdById])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  customerId    String?
+  customer      Customer?   @relation(fields: [customerId], references: [id])
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  status        OrderStatus @default(PENDING)
+  items         OrderItem[]
+  total         Decimal     @db.Decimal(10, 2)
+  notes         String?
+  invoice       Invoice?
+  createdById   String?
+  createdBy     Admin?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdById])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity  Decimal @db.Decimal(12, 3)
+  price     Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum InventoryMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  SALE_RETURN
+  PURCHASE_RETURN
+}
+
+model InventoryMovement {
+  id          String                @id @default(cuid())
+  productId   String?
+  product     Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
+  type        InventoryMovementType
+  quantity    Decimal               @db.Decimal(12, 3)
+  reason      String?
+  reference   String?
+  createdById String?
+  createdBy   Admin?                @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime              @default(now())
+
+  @@index([productId])
+  @@index([createdById])
+}
+
+
+model ProductPriceHistory {
+  id            String   @id @default(cuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  purchasePrice Decimal  @db.Decimal(12, 4)
+  reason        String?
+  reference     String?
+  createdById   String?
+  createdBy     Admin?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+
+  @@index([productId])
+  @@index([createdById])
+}
+
+model Supplier {
+  id              String                   @id @default(cuid())
+  name            String
+  phone           String?
+  email           String?
+  address         String?
+  purchaseOrders  PurchaseOrder[]
+  purchaseReturns PurchaseReturn[]
+  balance         Decimal                  @default(0) @db.Decimal(10, 2)
+  balanceHistory  SupplierBalanceHistory[]
+  createdById     String?
+  createdBy       Admin?                   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  @@index([createdById])
+}
+
+enum SupplierBalanceChangeReason {
+  PURCHASE_RETURN_CREDIT
+  PURCHASE_PAYMENT
+  PAYMENT_DELETED
+  MANUAL_ADJUSTMENT
+}
+
+model SupplierBalanceHistory {
+  id              String                      @id @default(cuid())
+  supplierId      String
+  supplier        Supplier                    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  purchaseOrderId String?
+  reference       String?
+  previousBalance Decimal                     @db.Decimal(10, 2)
+  change          Decimal                     @db.Decimal(10, 2)
+  newBalance      Decimal                     @db.Decimal(10, 2)
+  reason          SupplierBalanceChangeReason
+  note            String?
+  createdById     String?
+  createdAt       DateTime                    @default(now())
+
+  @@index([supplierId])
+  @@index([purchaseOrderId])
+  @@index([createdAt])
+}
+
+enum PurchaseOrderStatus {
+  PENDING
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id            String               @id @default(cuid())
+  orderNumber   String               @unique
+  supplierId    String
+  supplier      Supplier             @relation(fields: [supplierId], references: [id])
+  status        PurchaseOrderStatus  @default(PENDING)
+  language      InvoiceLanguage      @default(AR)
+  items         PurchaseOrderItem[]
+  total         Decimal              @db.Decimal(10, 2)
+  paymentStatus PaymentStatus        @default(UNPAID)
+  paidAmount    Decimal              @default(0) @db.Decimal(10, 2)
+  payments      SupplierPayment[]
+  returns       PurchaseReturn[]
+  attachments   PurchaseAttachment[]
+  receivedAt    DateTime?
+  // The supplier's own invoice number/date, as printed on their document —
+  // distinct from our generated `orderNumber`. Populated by the AI invoice
+  // scanner (src/features/purchases/scan-actions.ts) and editable in its
+  // review screen; null for hand-entered orders. The composite unique below
+  // is the hard duplicate-import guard (Postgres treats NULLs as distinct,
+  // so many null-invoice-number orders per supplier are still allowed).
+  supplierInvoiceNumber String?
+  supplierInvoiceDate   DateTime?
+  // One-shot key sent by the scanner's review screen so a double-click / retry
+  // of Confirm can't create the order twice.
+  scanIdempotencyKey    String?           @unique
+  createdById   String?
+  createdBy     Admin?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@unique([supplierId, supplierInvoiceNumber])
+  @@index([supplierId])
+  @@index([createdById])
+}
+
+
+model PurchaseAttachment {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  publicId        String
+  secureUrl       String
+  fileName        String
+  fileType        String
+  fileSize        Int
+  resourceType    String        @default("image")
+  uploadedById    String?
+  uploadedBy      Admin?        @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+
+  @@index([purchaseOrderId])
+}
+
+model SupplierPayment {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  amount          Decimal       @db.Decimal(10, 2)
+  method          PaymentMethod
+  note            String?
+  createdAt       DateTime      @default(now())
+
+  @@index([purchaseOrderId])
+}
+
+model PurchaseOrderItem {
+  id              String               @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder        @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product              @relation(fields: [productId], references: [id])
+  quantity        Decimal              @db.Decimal(12, 3)
+  unitCost        Decimal              @db.Decimal(12, 4)
+  position        Int                  @default(1)
+  returnItems     PurchaseReturnItem[]
+
+  @@index([purchaseOrderId])
+  @@index([purchaseOrderId, position])
+  @@index([productId])
+}
+
+enum ExpenseCategory {
+  RENT
+  SALARIES
+  TRANSPORTATION
+  UTILITIES
+  OTHER
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  category    ExpenseCategory
+  amount      Decimal         @db.Decimal(10, 2)
+  description String?
+  date        DateTime
+  createdById String?
+  createdBy   Admin?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([createdById])
+}
+
+enum InvoiceLanguage {
+  AR
+  EN
+  FR
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  BALANCE
+  OTHER
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+}
+
+model Invoice {
+  id                   String          @id @default(cuid())
+  invoiceNumber        String          @unique
+  sequenceNumber       Int             @unique @default(autoincrement())
+  language             InvoiceLanguage @default(AR)
+  customerId           String?
+  customer             Customer?       @relation(fields: [customerId], references: [id])
+  customerName         String
+  customerPhone        String
+  customerEmail        String?
+  notes                String?
+  orderId              String?         @unique
+  order                Order?          @relation(fields: [orderId], references: [id])
+  posSaleToken         String?         @unique
+  items                InvoiceItem[]
+  total                Decimal         @default(0) @db.Decimal(10, 2)
+  paymentMethod        PaymentMethod   @default(CASH)
+  paymentStatus        PaymentStatus   @default(UNPAID)
+  paidAmount           Decimal         @default(0) @db.Decimal(10, 2)
+  payments             Payment[]
+  returns              SalesReturn[]
+  balanceEffectApplied Decimal         @default(0) @db.Decimal(10, 2)
+  mergedDebtAmount     Decimal         @default(0) @db.Decimal(10, 2)
+  createdById          String?
+  createdBy            Admin?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@index([customerId])
+  @@index([createdById])
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount    Decimal       @db.Decimal(10, 2)
+  method    PaymentMethod
+  note      String?
+  batchId   String?
+  createdAt DateTime      @default(now())
+
+  @@index([invoiceId])
+  @@index([batchId])
+}
+
+enum BalanceChangeReason {
+  INVOICE_PAYMENT
+  BALANCE_USED
+  OVERPAYMENT_CREDIT
+  INVOICE_EDIT
+  INVOICE_CANCELLATION
+  BALANCE_RETURNED
+  MANUAL_ADJUSTMENT
+}
+
+model CustomerBalanceHistory {
+  id              String              @id @default(cuid())
+  customerId      String
+  customer        Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  invoiceId       String?
+  invoiceNumber   String?
+  previousBalance Decimal             @db.Decimal(10, 2)
+  change          Decimal             @db.Decimal(10, 2)
+  newBalance      Decimal             @db.Decimal(10, 2)
+  reason          BalanceChangeReason
+  note            String?
+  createdAt       DateTime            @default(now())
+
+  @@index([customerId])
+}
+
+model InvoiceItem {
+  id          String            @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?          @relation(fields: [productId], references: [id])
+  name        String
+  quantity    Decimal           @db.Decimal(12, 3)
+  unitPrice   Decimal           @db.Decimal(10, 2)
+  position    Int               @default(1)
+  returnItems SalesReturnItem[]
+
+  @@index([invoiceId])
+  @@index([invoiceId, position])
+  @@index([productId])
+}
+
+enum ReturnStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum ReturnedItemCondition {
+  GOOD
+  DAMAGED
+  DEFECTIVE
+}
+
+enum RefundMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  CUSTOMER_CREDIT
+  NO_IMMEDIATE_REFUND
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  CREDITED
+  NOT_REQUIRED
+}
+
+model SalesReturn {
+  id           String            @id @default(cuid())
+  returnNumber String            @unique
+  invoiceId    String
+  invoice      Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  customerId   String?
+  customer     Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  status       ReturnStatus      @default(CONFIRMED)
+  reason       String
+  notes        String?
+  subtotal     Decimal           @db.Decimal(10, 2)
+  refundAmount Decimal           @db.Decimal(10, 2)
+  refundMethod RefundMethod
+  refundStatus RefundStatus
+  refundDate   DateTime?
+  createdById  String
+  createdBy    Admin             @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  items        SalesReturnItem[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([invoiceId])
+  @@index([customerId])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+model SalesReturnItem {
+  id            String                @id @default(cuid())
+  salesReturnId String
+  salesReturn   SalesReturn           @relation(fields: [salesReturnId], references: [id], onDelete: Cascade)
+  invoiceItemId String
+  invoiceItem   InvoiceItem           @relation(fields: [invoiceItemId], references: [id], onDelete: Restrict)
+  productId     String?
+  product       Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
+  quantity      Decimal               @db.Decimal(12, 3)
+  unitPrice     Decimal               @db.Decimal(10, 2)
+  total         Decimal               @db.Decimal(10, 2)
+  condition     ReturnedItemCondition
+  restock       Boolean               @default(false)
+
+  @@index([salesReturnId])
+  @@index([invoiceItemId])
+  @@index([productId])
+}
+
+enum PurchaseRefundMethod {
+  CASH
+  BANK_TRANSFER
+  SUPPLIER_CREDIT
+  NO_IMMEDIATE_REFUND
+}
+
+model PurchaseReturn {
+  id           String               @id @default(cuid())
+  returnNumber String               @unique
+  purchaseId   String
+  purchase     PurchaseOrder        @relation(fields: [purchaseId], references: [id], onDelete: Restrict)
+  supplierId   String
+  supplier     Supplier             @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  status       ReturnStatus         @default(CONFIRMED)
+  reason       String
+  notes        String?
+  total        Decimal              @db.Decimal(10, 2)
+  refundAmount Decimal              @db.Decimal(10, 2)
+  refundMethod PurchaseRefundMethod
+  refundStatus RefundStatus
+  refundDate   DateTime?
+  createdById  String
+  createdBy    Admin                @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  items        PurchaseReturnItem[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([purchaseId])
+  @@index([supplierId])
+  @@index([createdById])
+  @@index([createdAt])
+}
+
+model PurchaseReturnItem {
+  id                  String            @id @default(cuid())
+  purchaseReturnId    String
+  purchaseReturn      PurchaseReturn    @relation(fields: [purchaseReturnId], references: [id], onDelete: Cascade)
+  purchaseOrderItemId String
+  purchaseOrderItem   PurchaseOrderItem @relation(fields: [purchaseOrderItemId], references: [id], onDelete: Restrict)
+  productId           String
+  product             Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  quantity            Decimal           @db.Decimal(12, 3)
+  unitCost            Decimal           @db.Decimal(12, 4)
+  total               Decimal           @db.Decimal(10, 2)
+  reason              String?
+
+  @@index([purchaseReturnId])
+  @@index([purchaseOrderItemId])
+  @@index([productId])
+}

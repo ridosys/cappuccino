@@ -1,0 +1,8 @@
+import { Undo2 } from "lucide-react";
+import { PageHeader } from "@/components/shared/page-header"; import { ReturnForm } from "@/features/returns/components/return-form"; import { getPurchaseForReturn } from "@/features/returns/queries";
+import { ReturnSourcePicker } from "@/features/returns/components/return-source-picker";
+import { requirePageAccess } from "@/lib/permissions";
+import { getDictionary, getLocale } from "@/i18n/server";
+export const dynamic="force-dynamic";
+export default async function Page({searchParams}:{searchParams:Promise<{purchaseId?:string}>}) { await requirePageAccess("RETURNS_MANAGE"); const {purchaseId}=await searchParams; const [purchase,t,locale]=await Promise.all([purchaseId?getPurchaseForReturn(purchaseId):null,getDictionary(),getLocale()]);
+return <div className="space-y-6"><PageHeader title={t.returns.newPurchaseTitle} icon={Undo2}/><div className="rounded-lg border p-4"><p className="mb-3 font-medium">{t.returns.chooseReceivedPurchase}</p><ReturnSourcePicker kind="purchase" selectedId={purchaseId} queryKey="purchaseId" placeholder={t.returns.purchaseSearch} /></div>{purchase&&<><div className="rounded-lg border bg-muted/30 p-4"><b>{purchase.orderNumber}</b> — {purchase.supplier.name} — {purchase.createdAt.toLocaleDateString(locale)}</div><ReturnForm kind="purchase" sourceId={purchase.id} rows={purchase.items.map(i=>({id:i.id,productName:i.product.name,sku:i.product.sku,barcode:i.product.barcode,original:Number(i.quantity),returned:i.returnItems.reduce((s,r)=>s+r.quantity.toNumber(),0),unitAmount:Number(i.unitCost),stock:Number(i.product.quantity)}))}/></>}</div> }

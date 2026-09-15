@@ -1,0 +1,11 @@
+-- New standalone permission gating the dashboard overview page
+-- (/dashboard) and its stats/charts, same as USERS_MANAGE/SETTINGS_MANAGE
+-- are standalone rather than tied to a VIEW/MANAGE module pair — the
+-- dashboard has no "manage" action, just "can see it or not".
+--
+-- Existing custom roles get nothing granted automatically (matches how
+-- every other permission has always worked when introduced) — an admin
+-- must explicitly check it on the Roles & Permissions page for any role
+-- that should keep seeing the dashboard. Full-access roles are unaffected,
+-- since isFullAccess bypasses the permission list entirely.
+ALTER TYPE "PermissionKey" ADD VALUE 'DASHBOARD_VIEW';
