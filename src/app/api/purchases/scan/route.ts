@@ -148,9 +148,6 @@ export async function POST(request: NextRequest) {
           payload: { pages, extracted, lines, supplierMatch, duplicateWarning },
         });
       } catch (error) {
-        // The client only shows a fixed, translated message per error code
-        // (see errorMessage() in scan-invoice-workspace.tsx) — the real
-        // cause is only visible here, in the server logs.
         console.error("[purchases/scan] failed", error);
         if (error instanceof PdfRenderError) {
           send({
