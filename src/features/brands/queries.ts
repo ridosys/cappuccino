@@ -69,7 +69,7 @@ export async function getBrandProfile(id: string, productPage: number) {
     prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(*)::bigint AS count
       FROM public."Product"
-      WHERE "brandId" = ${id} AND quantity <= "minStockLevel"
+      WHERE "brandId" = ${id} AND quantity <= "minStockLevel" AND status = 'ACTIVE'
     `,
   ]);
   if (!brand) return null;

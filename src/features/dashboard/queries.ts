@@ -24,7 +24,7 @@ export async function getDashboardStats() {
       }),
       prisma.$queryRaw<
         { count: bigint }[]
-      >`SELECT COUNT(*)::bigint AS count FROM public."Product" WHERE quantity <= "minStockLevel"`,
+      >`SELECT COUNT(*)::bigint AS count FROM public."Product" WHERE quantity <= "minStockLevel" AND status = 'ACTIVE'`,
       getOutstandingInvoicesSummary(),
       getCustomersOwingSummary(),
       prisma.$queryRaw<

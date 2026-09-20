@@ -75,7 +75,7 @@ export async function getCategoryProfile(id: string, productPage: number) {
     prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(*)::bigint AS count
       FROM public."Product"
-      WHERE "categoryId" = ${id} AND quantity <= "minStockLevel"
+      WHERE "categoryId" = ${id} AND quantity <= "minStockLevel" AND status = 'ACTIVE'
     `,
   ]);
   if (!category) return null;

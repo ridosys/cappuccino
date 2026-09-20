@@ -160,7 +160,7 @@ export async function getLowStockProductsPage({ page }: { page: number }) {
     }[]
   >`SELECT id, name, sku, quantity, "minStockLevel", COUNT(*) OVER()::bigint AS "totalCount"
     FROM public."Product"
-    WHERE quantity <= "minStockLevel"
+    WHERE quantity <= "minStockLevel" AND status = 'ACTIVE'
     ORDER BY quantity ASC
     LIMIT ${LOW_STOCK_PAGE_SIZE} OFFSET ${(page - 1) * LOW_STOCK_PAGE_SIZE}`;
 
@@ -194,6 +194,8 @@ export type LowStockProduct = {
 };
 
 const lowStockWhere = (): Prisma.ProductWhereInput => ({
+  // An inactive product isn't for sale, so running low never needs a reorder.
+  status: "ACTIVE",
   quantity: { lte: prisma.product.fields.minStockLevel },
 });
 
