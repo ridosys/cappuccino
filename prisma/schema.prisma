@@ -31,6 +31,8 @@ model Admin {
   createdExpenses             Expense[]
   createdPriceHistory         ProductPriceHistory[]
   uploadedPurchaseAttachments PurchaseAttachment[]
+  telegramAccount             TelegramAccount?
+  telegramLinkTokens          TelegramLinkToken[]
 
   @@index([roleId])
 }
@@ -133,24 +135,24 @@ enum ProductStatus {
 }
 
 model Product {
-  id                  String                @id @default(cuid())
+  id                  String                     @id @default(cuid())
   name                String
-  slug                String                @unique
-  sku                 String                @unique
-  barcode             String?               @unique
+  slug                String                     @unique
+  sku                 String                     @unique
+  barcode             String?                    @unique
   description         String?
   categoryId          String
-  category            Category              @relation(fields: [categoryId], references: [id])
+  category            Category                   @relation(fields: [categoryId], references: [id])
   brandId             String?
-  brand               Brand?                @relation(fields: [brandId], references: [id])
-  quantity            Decimal               @default(0) @db.Decimal(12, 3)
-  minStockLevel       Decimal               @default(0) @db.Decimal(12, 3)
-  price1              Decimal               @default(0) @db.Decimal(12, 4)
-  price2              Decimal               @default(0) @db.Decimal(12, 4)
-  price3              Decimal               @default(0) @db.Decimal(12, 4)
-  purchasePrice       Decimal               @default(0) @db.Decimal(12, 4)
-  weight              Decimal?              @default(0) @db.Decimal(10, 3)
-  status              ProductStatus         @default(ACTIVE)
+  brand               Brand?                     @relation(fields: [brandId], references: [id])
+  quantity            Decimal                    @default(0) @db.Decimal(12, 3)
+  minStockLevel       Decimal                    @default(0) @db.Decimal(12, 3)
+  price1              Decimal                    @default(0) @db.Decimal(12, 4)
+  price2              Decimal                    @default(0) @db.Decimal(12, 4)
+  price3              Decimal                    @default(0) @db.Decimal(12, 4)
+  purchasePrice       Decimal                    @default(0) @db.Decimal(12, 4)
+  weight              Decimal?                   @default(0) @db.Decimal(10, 3)
+  status              ProductStatus              @default(ACTIVE)
   images              ProductImage[]
   orderItems          OrderItem[]
   movements           InventoryMovement[]
@@ -159,12 +161,13 @@ model Product {
   invoiceItems        InvoiceItem[]
   salesReturnItems    SalesReturnItem[]
   purchaseReturnItems PurchaseReturnItem[]
-  damagedQuantity     Decimal               @default(0) @db.Decimal(12, 3)
-  defectiveQuantity   Decimal               @default(0) @db.Decimal(12, 3)
+  damagedQuantity     Decimal                    @default(0) @db.Decimal(12, 3)
+  defectiveQuantity   Decimal                    @default(0) @db.Decimal(12, 3)
   createdById         String?
-  createdBy           Admin?                @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
+  createdBy           Admin?                     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  telegramDraftItems  TelegramInvoiceDraftItem[]
 
   @@index([categoryId])
   @@index([brandId])
@@ -198,6 +201,7 @@ model Customer {
   invoices       Invoice[]
   balanceHistory CustomerBalanceHistory[]
   salesReturns   SalesReturn[]
+  telegramDrafts TelegramInvoiceDraft[]
   createdById    String?
   createdBy      Admin?                   @relation(fields: [createdById], references: [id], onDelete: SetNull)
   createdAt      DateTime                 @default(now())
@@ -273,7 +277,6 @@ model InventoryMovement {
   @@index([createdById])
 }
 
-
 model ProductPriceHistory {
   id            String   @id @default(cuid())
   productId     String
@@ -340,20 +343,20 @@ enum PurchaseOrderStatus {
 }
 
 model PurchaseOrder {
-  id            String               @id @default(cuid())
-  orderNumber   String               @unique
-  supplierId    String
-  supplier      Supplier             @relation(fields: [supplierId], references: [id])
-  status        PurchaseOrderStatus  @default(PENDING)
-  language      InvoiceLanguage      @default(AR)
-  items         PurchaseOrderItem[]
-  total         Decimal              @db.Decimal(10, 2)
-  paymentStatus PaymentStatus        @default(UNPAID)
-  paidAmount    Decimal              @default(0) @db.Decimal(10, 2)
-  payments      SupplierPayment[]
-  returns       PurchaseReturn[]
-  attachments   PurchaseAttachment[]
-  receivedAt    DateTime?
+  id                    String               @id @default(cuid())
+  orderNumber           String               @unique
+  supplierId            String
+  supplier              Supplier             @relation(fields: [supplierId], references: [id])
+  status                PurchaseOrderStatus  @default(PENDING)
+  language              InvoiceLanguage      @default(AR)
+  items                 PurchaseOrderItem[]
+  total                 Decimal              @db.Decimal(10, 2)
+  paymentStatus         PaymentStatus        @default(UNPAID)
+  paidAmount            Decimal              @default(0) @db.Decimal(10, 2)
+  payments              SupplierPayment[]
+  returns               PurchaseReturn[]
+  attachments           PurchaseAttachment[]
+  receivedAt            DateTime?
   // The supplier's own invoice number/date, as printed on their document —
   // distinct from our generated `orderNumber`. Populated by the AI invoice
   // scanner (src/features/purchases/scan-actions.ts) and editable in its
@@ -364,17 +367,16 @@ model PurchaseOrder {
   supplierInvoiceDate   DateTime?
   // One-shot key sent by the scanner's review screen so a double-click / retry
   // of Confirm can't create the order twice.
-  scanIdempotencyKey    String?           @unique
-  createdById   String?
-  createdBy     Admin?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  scanIdempotencyKey    String?              @unique
+  createdById           String?
+  createdBy             Admin?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
 
   @@unique([supplierId, supplierInvoiceNumber])
   @@index([supplierId])
   @@index([createdById])
 }
-
 
 model PurchaseAttachment {
   id              String        @id @default(cuid())
@@ -464,32 +466,34 @@ enum PaymentStatus {
 }
 
 model Invoice {
-  id                   String          @id @default(cuid())
-  invoiceNumber        String          @unique
-  sequenceNumber       Int             @unique @default(autoincrement())
-  language             InvoiceLanguage @default(AR)
+  id                   String                @id @default(cuid())
+  invoiceNumber        String                @unique
+  sequenceNumber       Int                   @unique @default(autoincrement())
+  language             InvoiceLanguage       @default(AR)
   customerId           String?
-  customer             Customer?       @relation(fields: [customerId], references: [id])
+  customer             Customer?             @relation(fields: [customerId], references: [id])
   customerName         String
   customerPhone        String
   customerEmail        String?
   notes                String?
-  orderId              String?         @unique
-  order                Order?          @relation(fields: [orderId], references: [id])
-  posSaleToken         String?         @unique
+  orderId              String?               @unique
+  order                Order?                @relation(fields: [orderId], references: [id])
+  posSaleToken         String?               @unique
   items                InvoiceItem[]
-  total                Decimal         @default(0) @db.Decimal(10, 2)
-  paymentMethod        PaymentMethod   @default(CASH)
-  paymentStatus        PaymentStatus   @default(UNPAID)
-  paidAmount           Decimal         @default(0) @db.Decimal(10, 2)
+  total                Decimal               @default(0) @db.Decimal(10, 2)
+  paymentMethod        PaymentMethod         @default(CASH)
+  paymentStatus        PaymentStatus         @default(UNPAID)
+  paidAmount           Decimal               @default(0) @db.Decimal(10, 2)
   payments             Payment[]
   returns              SalesReturn[]
-  balanceEffectApplied Decimal         @default(0) @db.Decimal(10, 2)
-  mergedDebtAmount     Decimal         @default(0) @db.Decimal(10, 2)
+  balanceEffectApplied Decimal               @default(0) @db.Decimal(10, 2)
+  mergedDebtAmount     Decimal               @default(0) @db.Decimal(10, 2)
   createdById          String?
-  createdBy            Admin?          @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
+  createdBy            Admin?                @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdByBot         Boolean               @default(false)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  telegramDraft        TelegramInvoiceDraft?
 
   @@index([customerId])
   @@index([createdById])
@@ -674,4 +678,92 @@ model PurchaseReturnItem {
   @@index([purchaseReturnId])
   @@index([purchaseOrderItemId])
   @@index([productId])
+}
+
+enum TelegramDraftStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum TelegramMatchStatus {
+  EXACT
+  STRONG
+  AMBIGUOUS
+  NOT_FOUND
+}
+
+model TelegramAccount {
+  id                   String                 @id @default(cuid())
+  telegramUserId       BigInt                 @unique
+  adminId              String                 @unique
+  admin                Admin                  @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  isActive             Boolean                @default(true)
+  language             InvoiceLanguage?
+  linkedAt             DateTime               @default(now())
+  drafts               TelegramInvoiceDraft[]
+  chatMessages         TelegramChatMessage[]
+  conversationSummary  String?
+  messagesSinceSummary Int                    @default(0)
+}
+
+
+model TelegramChatMessage {
+  id                String          @id @default(cuid())
+  telegramAccountId String
+  telegramAccount   TelegramAccount @relation(fields: [telegramAccountId], references: [id], onDelete: Cascade)
+  content           String
+  createdAt         DateTime        @default(now())
+
+  @@index([telegramAccountId, createdAt])
+}
+
+model TelegramLinkToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  adminId    String
+  admin      Admin     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([adminId])
+}
+
+model TelegramInvoiceDraft {
+  id                String                     @id @default(cuid())
+  token             String                     @unique
+  telegramAccountId String
+  telegramAccount   TelegramAccount            @relation(fields: [telegramAccountId], references: [id], onDelete: Cascade)
+  status            TelegramDraftStatus        @default(PENDING)
+  rawTranscript     String?
+  customerId        String?
+  customer          Customer?                  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  invoiceId         String?                    @unique
+  invoice           Invoice?                   @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  expiresAt         DateTime
+  confirmedAt       DateTime?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  items             TelegramInvoiceDraftItem[]
+
+  @@index([telegramAccountId, status])
+}
+
+model TelegramInvoiceDraftItem {
+  id               String               @id @default(cuid())
+  draftId          String
+  draft            TelegramInvoiceDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  spokenName       String
+  quantity         Decimal              @db.Decimal(12, 3)
+  matchStatus      TelegramMatchStatus
+  matchedProductId String?
+  matchedProduct   Product?             @relation(fields: [matchedProductId], references: [id], onDelete: SetNull)
+
+  candidateProductIds String[] @default([])
+  position            Int      @default(1)
+
+  @@index([draftId])
+  @@index([matchedProductId])
 }

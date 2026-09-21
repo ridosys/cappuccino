@@ -85,13 +85,6 @@ function diceCoefficient(a: string, b: string): number {
   return (2 * overlap) / (totalA + totalB);
 }
 
-/** Token-level overlap that tolerates OCR typos inside a word instead of
- * requiring it to match some other token exactly, the way a plain Jaccard
- * set-intersection would. Each token of the smaller side is paired with its
- * best still-unused match on the other side (exact match, or bigram
- * similarity for a near-miss like "poisse"/"pousse"); word order doesn't
- * matter, and a match below 0.5 similarity isn't counted at all so
- * unrelated words don't contribute noise. */
 function fuzzyTokenOverlap(a: string, b: string): number {
   const tokensA = a.split(" ").filter(Boolean);
   const tokensB = b.split(" ").filter(Boolean);
@@ -131,8 +124,6 @@ export function textScore(a: string, b: string): number {
   const tokenOverlap = fuzzyTokenOverlap(a, b);
   let score = 0.5 * dice + 0.5 * tokenOverlap;
 
-  // Containment boost: a supplier often abbreviates or extends our name, or
-  // spaces a code differently ("20 W" vs "20W").
   const [shortWords, longWords] = a.length <= b.length ? [a, b] : [b, a];
   if (shortWords.length >= 4 && longWords.includes(shortWords)) {
     score = Math.max(score, 0.85);
@@ -239,8 +230,6 @@ export function matchInvoiceLine(
     }
   }
 
-  // 2. Exact SKU (also allow the invoice's "sku" field to hit our barcode,
-  //    since suppliers label that column inconsistently).
   if (lineCode) {
     const bySku = indexed.filter((p) => p._code && p._code === lineCode);
     if (bySku.length === 1) {

@@ -16,6 +16,7 @@ import {
   UserCog,
   ShieldCheck,
   Palette,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -183,6 +184,12 @@ export function getAdminNavGroups(
           label: t.admin.appearance,
           icon: Palette,
           permission: "SETTINGS_MANAGE",
+        },
+        {
+          href: "/dashboard/settings/telegram",
+          label: t.admin.telegram,
+          icon: Send,
+          permission: "POS_MANAGE",
         },
       ],
     },

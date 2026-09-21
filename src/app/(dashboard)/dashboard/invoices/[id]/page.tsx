@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FileText, Printer, RotateCcw } from "lucide-react";
+import { FileText, Printer, RotateCcw, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
 import { BackButton } from "@/components/shared/back-button";
 import {
@@ -92,12 +93,20 @@ export default async function InvoiceEditPage({
         }
       />
 
-      <p className="text-sm text-muted-foreground">
-        {t.common.createdByLabel}:{" "}
-        <span className="font-medium text-foreground">
-          {invoice.createdBy?.name ?? t.common.unknownEmployee}
-        </span>
-      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-sm text-muted-foreground">
+          {t.common.createdByLabel}:{" "}
+          <span className="font-medium text-foreground">
+            {invoice.createdBy?.name ?? t.common.unknownEmployee}
+          </span>
+        </p>
+        {invoice.createdByBot && (
+          <Badge variant="secondary">
+            <Send className="size-3" />
+            {t.common.createdByBotBadge}
+          </Badge>
+        )}
+      </div>
 
       <div className="flex flex-wrap items-center gap-4 rounded-lg border p-4">
         <PaymentStatusBadge status={invoice.paymentStatus} />

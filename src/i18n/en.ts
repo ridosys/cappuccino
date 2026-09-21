@@ -71,6 +71,7 @@ export const en = {
       "You don't have sufficient permission to perform this action",
     createdByLabel: "Employee",
     unknownEmployee: "Unknown",
+    createdByBotBadge: "Created via Telegram bot",
     deletePasswordError: "Incorrect password",
     unsavedChanges: "Unsaved changes",
     unsavedChangesLeaveConfirm:
@@ -106,6 +107,7 @@ export const en = {
     users: "Users",
     roles: "Roles & Permissions",
     appearance: "Appearance",
+    telegram: "Telegram",
     groups: {
       catalog: "Catalog",
       sales: "Sales",
@@ -1588,5 +1590,20 @@ export const en = {
       "A product is no longer available, please review the cart",
     saleFailedError: "Could not complete the sale, please try again",
     languageUpdatedToast: "Invoice language updated",
+  },
+  telegram: {
+    description:
+      "Link your account to your Telegram account to create invoices from voice or text messages to the bot.",
+    connectedLabel: "Connected",
+    notConnectedLabel: "Not connected",
+    connectButton: "Connect account",
+    unlinkButton: "Unlink",
+    unlinkConfirmTitle: "Unlink Telegram",
+    unlinkConfirmDescription:
+      "You won't be able to create invoices through the bot anymore until you link your account again.",
+    openInTelegram: "Open in Telegram",
+    linkExpiresNote: "This link expires in 15 minutes and replaces any earlier one.",
+    generateError: "Could not create the link. Make sure the bot is configured by a system admin.",
+    unlinkSuccess: "Account unlinked",
   },
 } as const;

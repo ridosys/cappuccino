@@ -68,6 +68,7 @@ export const ar = {
       "ليست لديك الصلاحية الكافية لتنفيذ هذا الإجراء",
     createdByLabel: "الموظف",
     unknownEmployee: "غير معروف",
+    createdByBotBadge: "أُنشئت عبر بوت Telegram",
     deletePasswordError: "كلمة المرور غير صحيحة",
     unsavedChanges: "تغييرات غير محفوظة",
     unsavedChangesLeaveConfirm:
@@ -103,6 +104,7 @@ export const ar = {
     users: "المستخدمون",
     roles: "الأدوار والصلاحيات",
     appearance: "المظهر",
+    telegram: "Telegram",
     groups: {
       catalog: "الكتالوج",
       sales: "المبيعات",
@@ -1549,6 +1551,21 @@ export const ar = {
     productUnavailableError: "أحد المنتجات لم يعد متاحاً، الرجاء تحديث السلة",
     saleFailedError: "تعذّر إتمام عملية البيع، حاول مرة أخرى",
     languageUpdatedToast: "تم تحديث لغة الفاتورة",
+  },
+  telegram: {
+    description:
+      "اربط حسابك بحساب Telegram الخاص بك لإنشاء فواتير عبر رسائل صوتية أو نصية للبوت.",
+    connectedLabel: "متصل",
+    notConnectedLabel: "غير متصل",
+    connectButton: "ربط الحساب",
+    unlinkButton: "إلغاء الربط",
+    unlinkConfirmTitle: "إلغاء ربط Telegram",
+    unlinkConfirmDescription:
+      "لن تتمكن بعد الآن من إنشاء فواتير عبر البوت حتى تربط حسابك من جديد.",
+    openInTelegram: "فتح في Telegram",
+    linkExpiresNote: "ينتهي هذا الرابط خلال 15 دقيقة، وسيُستبدل رابط سابق إن وُجد.",
+    generateError: "تعذّر إنشاء رابط الربط. تأكد من إعداد البوت من طرف مدير النظام.",
+    unlinkSuccess: "تم إلغاء ربط الحساب",
   },
 } as const;
 

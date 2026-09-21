@@ -74,6 +74,7 @@ export const fr = {
       "Vous n'avez pas la permission suffisante pour effectuer cette action",
     createdByLabel: "Employé",
     unknownEmployee: "Inconnu",
+    createdByBotBadge: "Créée via le bot Telegram",
     deletePasswordError: "Mot de passe incorrect",
     unsavedChanges: "Modifications non enregistrées",
     unsavedChangesLeaveConfirm:
@@ -109,6 +110,7 @@ export const fr = {
     users: "Utilisateurs",
     roles: "Rôles et permissions",
     appearance: "Apparence",
+    telegram: "Telegram",
     groups: {
       catalog: "Catalogue",
       sales: "Ventes",
@@ -1628,5 +1630,20 @@ export const fr = {
     productUnavailableError: "Un produit n'est plus disponible, veuillez vérifier le panier",
     saleFailedError: "Impossible de finaliser la vente, veuillez réessayer",
     languageUpdatedToast: "Langue de la facture mise à jour",
+  },
+  telegram: {
+    description:
+      "Reliez votre compte à votre compte Telegram pour créer des factures par message vocal ou texte au bot.",
+    connectedLabel: "Connecté",
+    notConnectedLabel: "Non connecté",
+    connectButton: "Lier le compte",
+    unlinkButton: "Délier",
+    unlinkConfirmTitle: "Délier Telegram",
+    unlinkConfirmDescription:
+      "Vous ne pourrez plus créer de factures via le bot tant que vous n'aurez pas relié votre compte.",
+    openInTelegram: "Ouvrir dans Telegram",
+    linkExpiresNote: "Ce lien expire dans 15 minutes et remplace un lien précédent.",
+    generateError: "Impossible de créer le lien. Vérifiez que le bot est configuré par un administrateur.",
+    unlinkSuccess: "Compte délié",
   },
 } as const;

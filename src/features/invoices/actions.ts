@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import {
   requirePermission,
   hasPermission,
+  getEffectivePermissions,
   type PermissionKey,
 } from "@/lib/permissions";
 import { invoiceSchema } from "@/features/invoices/schema";
@@ -101,13 +102,34 @@ export async function createInvoice(
      * with the same token resolves to the existing invoice instead of
      * creating a second one. */
     posSaleToken?: string;
+    /** Pre-authenticated caller that has no NextAuth session to read (the
+     * Telegram bot webhook, or a Telegram Mini App action authenticated via
+     * `initData` instead of a dashboard cookie) — both already resolved and
+     * permission-checked this id themselves. When set, skips the
+     * `auth()`-based session check and uses this id directly as both the
+     * permission subject and `createdById`. */
+    actingAdminId?: string;
+    /** Marks the created invoice as bot-originated (Telegram AI Voice
+     * Invoice) — surfaced to staff on the invoice detail page. Every other
+     * caller omits this and the column keeps its `false` default. */
+    createdByBot?: boolean;
   },
 ): Promise<ActionResult & { invoiceId?: string }> {
-  const access = await requirePermission(
-    options?.permission ?? "INVOICES_MANAGE",
-  );
-  if (!access.ok) return { error: access.error };
   const t = await getDictionary();
+  const permission = options?.permission ?? "INVOICES_MANAGE";
+
+  let adminId: string;
+  if (options?.actingAdminId) {
+    const effective = await getEffectivePermissions(options.actingAdminId);
+    if (effective !== "full" && !effective.has(permission)) {
+      return { error: t.common.insufficientPermissionError };
+    }
+    adminId = options.actingAdminId;
+  } else {
+    const access = await requirePermission(permission);
+    if (!access.ok) return { error: access.error };
+    adminId = access.adminId;
+  }
 
   // Idempotency: a POS sale that's already been committed under this token
   // must never create a second invoice (double-click, retried request).
@@ -198,7 +220,8 @@ export async function createInvoice(
           paidAmount,
           balanceEffectApplied: balanceEffect,
           posSaleToken: options?.posSaleToken ?? null,
-          createdById: access.adminId,
+          createdById: adminId,
+          createdByBot: options?.createdByBot ?? false,
           items: {
             create: parsed.data.items.map((item, index) => ({
               productId: item.productId || null,

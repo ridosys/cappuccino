@@ -19,10 +19,6 @@ export {
   type PermissionModuleKey,
 } from "@/lib/permission-modules";
 
-/** Fresh DB read of what an admin can do right now — never derived from the
- * JWT, so a permission change takes effect on the user's very next action
- * instead of only after they log back in. Returns "full" for admins whose
- * role bypasses the permission list entirely. */
 export async function getEffectivePermissions(
   adminId: string,
 ): Promise<Set<PermissionKey> | "full"> {
@@ -44,7 +40,9 @@ export async function getEffectivePermissions(
 }
 
 /** For Server Components deciding what to render (nav items, whole pages). */
-export async function hasPermission(permission: PermissionKey): Promise<boolean> {
+export async function hasPermission(
+  permission: PermissionKey,
+): Promise<boolean> {
   const session = await auth();
   if (!session?.user) return false;
   const effective = await getEffectivePermissions(session.user.id);
@@ -95,7 +93,9 @@ export function canAccessDashboard(): Promise<boolean> {
  * and not a broken link. The layout above already redirects unauthenticated
  * visitors to /login, so by the time a page body runs the only remaining
  * case here is "authenticated but not permitted". */
-export async function requirePageAccess(permission: PermissionKey): Promise<void> {
+export async function requirePageAccess(
+  permission: PermissionKey,
+): Promise<void> {
   const allowed = await hasPermission(permission);
   if (!allowed) redirect("/dashboard/access-denied");
 }
@@ -154,12 +154,17 @@ export async function requirePermission(
  * meaningful (unlike a Server Action's return value). */
 export async function requireApiPermission(
   permission: PermissionKey,
-): Promise<{ ok: true; adminId: string } | { ok: false; response: NextResponse }> {
+): Promise<
+  { ok: true; adminId: string } | { ok: false; response: NextResponse }
+> {
   const access = await requirePermission(permission);
   if (access.ok) return access;
   return {
     ok: false,
-    response: NextResponse.json({ error: access.error }, { status: access.status }),
+    response: NextResponse.json(
+      { error: access.error },
+      { status: access.status },
+    ),
   };
 }
 
