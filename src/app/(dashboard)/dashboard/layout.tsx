@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { UnsavedChangesProvider } from "@/components/shared/unsaved-changes";
 import { auth } from "@/lib/auth";
-import { getDashboardStats } from "@/features/dashboard/queries";
+import { getSidebarBadges } from "@/features/dashboard/queries";
 import { getSystemSettings } from "@/features/settings/queries";
 import { getEffectivePermissions } from "@/lib/permissions";
 
@@ -15,7 +15,7 @@ export default async function DashboardLayout({
 }) {
   const [session, stats, settings] = await Promise.all([
     auth(),
-    getDashboardStats(),
+    getSidebarBadges(),
     getSystemSettings(),
   ]);
 

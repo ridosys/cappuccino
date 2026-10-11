@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { withDbRetry } from "@/lib/db-retry";
 import { getOutstandingInvoicesSummary } from "@/features/invoices/queries";
@@ -46,3 +47,31 @@ export async function getDashboardStats() {
     ),
   };
 }
+
+/** The three sidebar badge counts — a lightweight stand-in for
+ * `getDashboardStats` in the dashboard layout (which only needs these).
+ * Cached for 30s under a tag: the badges are a hint, not a source of truth,
+ * and the pages they point to always read live data. */
+export const getSidebarBadges = unstable_cache(
+  async () => {
+    const [pendingOrders, lowStockRows, unpaidInvoicesCount] =
+      await withDbRetry(() =>
+        Promise.all([
+          prisma.order.count({ where: { status: "PENDING" } }),
+          prisma.$queryRaw<
+            { count: bigint }[]
+          >`SELECT COUNT(*)::bigint AS count FROM public."Product" WHERE quantity <= "minStockLevel" AND status = 'ACTIVE'`,
+          prisma.invoice.count({
+            where: { paymentStatus: { in: ["UNPAID", "PARTIALLY_PAID"] } },
+          }),
+        ]),
+      );
+    return {
+      pendingOrders,
+      lowStockCount: Number(lowStockRows[0]?.count ?? 0),
+      unpaidInvoicesCount,
+    };
+  },
+  ["sidebar-badges"],
+  { revalidate: 30, tags: ["sidebar-badges"] },
+);
