@@ -1,5 +1,7 @@
 export const en = {
   common: {
+    showPassword: "Show password",
+    hidePassword: "Hide password",
     genericErrorToast: "An error occurred",
     save: "Save",
     cancel: "Cancel",

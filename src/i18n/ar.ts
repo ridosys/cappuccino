@@ -1,5 +1,7 @@
 export const ar = {
   common: {
+    showPassword: "إظهار كلمة المرور",
+    hidePassword: "إخفاء كلمة المرور",
     genericErrorToast: "حدث خطأ",
     save: "حفظ",
     cancel: "إلغاء",

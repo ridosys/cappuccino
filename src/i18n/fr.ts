@@ -1,5 +1,7 @@
 export const fr = {
   common: {
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe",
     genericErrorToast: "Une erreur s'est produite",
     save: "Enregistrer",
     cancel: "Annuler",
