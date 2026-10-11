@@ -32,6 +32,7 @@ model Admin {
   createdPriceHistory         ProductPriceHistory[]
   uploadedPurchaseAttachments PurchaseAttachment[]
   telegramAccount             TelegramAccount?
+  posRegisters                PosRegister[]
   telegramLinkTokens          TelegramLinkToken[]
 
   @@index([roleId])
@@ -63,6 +64,7 @@ enum PermissionKey {
   DASHBOARD_VIEW
   POS_VIEW
   POS_MANAGE
+  POS_CONFIGURE
 }
 
 model Role {
@@ -97,19 +99,20 @@ model SystemSettings {
 }
 
 model Category {
-  id             String     @id @default(cuid())
+  id             String        @id @default(cuid())
   name           String
-  slug           String     @unique
+  slug           String        @unique
   imagePublicId  String?
   imageSecureUrl String?
   parentId       String?
-  parent         Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children       Category[] @relation("CategoryTree")
+  parent         Category?     @relation("CategoryTree", fields: [parentId], references: [id])
+  children       Category[]    @relation("CategoryTree")
   products       Product[]
+  posRegisters   PosRegister[]
   createdById    String?
-  createdBy      Admin?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  createdBy      Admin?        @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@index([createdById])
 }
@@ -199,6 +202,7 @@ model Customer {
   isFavorite     Boolean                  @default(false)
   orders         Order[]
   invoices       Invoice[]
+  posRegisters   PosRegister[]
   balanceHistory CustomerBalanceHistory[]
   salesReturns   SalesReturn[]
   telegramDrafts TelegramInvoiceDraft[]
@@ -708,7 +712,6 @@ model TelegramAccount {
   messagesSinceSummary Int                    @default(0)
 }
 
-
 model TelegramChatMessage {
   id                String          @id @default(cuid())
   telegramAccountId String
@@ -766,4 +769,23 @@ model TelegramInvoiceDraftItem {
 
   @@index([draftId])
   @@index([matchedProductId])
+}
+
+/// A configured La Caisse: locked to one customer and (optionally) a set of
+/// categories, and assigned to specific admins. An admin assigned to an
+/// active register can only sell through it; admins with none use the
+/// regular unrestricted caisse. Created by holders of POS_CONFIGURE.
+model PosRegister {
+  id         String     @id @default(cuid())
+  name       String
+  isActive   Boolean    @default(true)
+  customerId String
+  customer   Customer   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  /// Empty = every category.
+  categories Category[]
+  admins     Admin[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([customerId])
 }

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireApiPermission } from "@/lib/permissions";
+import { getAdminPosRegister } from "@/features/pos-registers/queries";
 import {
   getPosProducts,
   POS_PRODUCT_SORTS,
@@ -10,6 +11,7 @@ export async function GET(request: NextRequest) {
   const access = await requireApiPermission("POS_VIEW");
   if (!access.ok) return access.response;
 
+  const register = await getAdminPosRegister(access.adminId);
   const params = request.nextUrl.searchParams;
   const categoryId = params.get("categoryId");
   const offset = Number(params.get("offset")) || 0;
@@ -27,6 +29,7 @@ export async function GET(request: NextRequest) {
     sort,
     inStockOnly: params.get("inStock") === "1",
     customerId: params.get("customerId"),
+    allowedCategoryIds: register?.categoryIds,
   });
 
   return NextResponse.json(feed);

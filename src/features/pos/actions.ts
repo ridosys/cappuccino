@@ -12,19 +12,25 @@ import {
   getPosProductByBarcode,
   type PosCustomer,
 } from "@/features/pos/queries";
+import { getAdminPosRegister } from "@/features/pos-registers/queries";
 
 type ActionError = { error: string };
 
 export async function searchPosCustomersAction(q: string, offset = 0) {
   const access = await requirePermission("POS_VIEW");
   if (!access.ok) return { items: [] as PosCustomer[], hasMore: false };
+  // A configured caisse has one fixed customer — nothing to search.
+  if (await getAdminPosRegister(access.adminId)) {
+    return { items: [] as PosCustomer[], hasMore: false };
+  }
   return searchPosCustomers({ q, offset });
 }
 
 export async function findPosProductByBarcodeAction(barcode: string) {
   const access = await requirePermission("POS_VIEW");
   if (!access.ok) return null;
-  return getPosProductByBarcode(barcode);
+  const register = await getAdminPosRegister(access.adminId);
+  return getPosProductByBarcode(barcode, register?.categoryIds);
 }
 
 export async function createPosSale(input: unknown): Promise<
@@ -48,8 +54,13 @@ export async function createPosSale(input: unknown): Promise<
   if (!parsed.success) return { error: t.pos.saleFailedError };
   const data = parsed.data;
 
+  // A configured caisse always sells to its own customer and only its own
+  // categories — never trust the customer id the client sent.
+  const register = await getAdminPosRegister(access.adminId);
+  const customerId = register ? register.customerId : data.customerId;
+
   const customer = await prisma.customer.findUnique({
-    where: { id: data.customerId },
+    where: { id: customerId },
     select: { id: true, name: true, phone: true, email: true, balance: true },
   });
   if (!customer) return { error: t.pos.noCustomerError };
@@ -60,11 +71,19 @@ export async function createPosSale(input: unknown): Promise<
   const productIds = data.items.map((item) => item.productId);
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, status: "ACTIVE" },
-    select: { id: true, name: true, price1: true },
+    select: { id: true, name: true, price1: true, categoryId: true },
   });
   const byId = new Map(products.map((p) => [p.id, p]));
   if (data.items.some((item) => !byId.has(item.productId))) {
     return { error: t.pos.productUnavailableError };
+  }
+
+  if (
+    register &&
+    register.categoryIds.length > 0 &&
+    products.some((p) => !register.categoryIds.includes(p.categoryId))
+  ) {
+    return { error: t.posRegisters.productNotAllowedError };
   }
 
   const items = data.items.map((item) => {

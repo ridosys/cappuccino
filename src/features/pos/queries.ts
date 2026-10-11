@@ -96,15 +96,32 @@ const SORT_ORDER: Record<PosProductSort, Prisma.ProductOrderByWithRelationInput[
   stockDesc: [{ quantity: "desc" }, { name: "asc" }],
 };
 
+/** Which category ids a request may see, given the category the cashier
+ * picked and the caisse's allowed list (empty/undefined = unrestricted).
+ * null = no category filter; [] = nothing is visible. */
+function resolveCategoryScope(
+  categoryId?: string | null,
+  allowedCategoryIds?: string[] | null,
+): string[] | null {
+  const restricted = !!allowedCategoryIds && allowedCategoryIds.length > 0;
+  if (categoryId) {
+    if (!restricted) return [categoryId];
+    return allowedCategoryIds!.includes(categoryId) ? [categoryId] : [];
+  }
+  return restricted ? allowedCategoryIds! : null;
+}
+
 function productWhere(
   categoryId?: string | null,
   q?: string | null,
   inStockOnly?: boolean,
+  allowedCategoryIds?: string[] | null,
 ): Prisma.ProductWhereInput {
   const search = q?.trim();
+  const scope = resolveCategoryScope(categoryId, allowedCategoryIds);
   return {
     status: "ACTIVE",
-    ...(categoryId ? { categoryId } : {}),
+    ...(scope ? { categoryId: { in: scope } } : {}),
     ...(inStockOnly ? { quantity: { gt: 0 } } : {}),
     ...(search
       ? {
@@ -125,12 +142,17 @@ function productWhere(
 export async function getPosCategoriesPage({
   offset = 0,
   take = POS_CATEGORIES_PAGE_SIZE,
+  allowedCategoryIds,
 }: {
   offset?: number;
   take?: number;
+  /** A configured caisse's category list; empty/undefined = every category. */
+  allowedCategoryIds?: string[] | null;
 } = {}) {
+  const restricted = !!allowedCategoryIds && allowedCategoryIds.length > 0;
   const [rows, total] = await Promise.all([
     prisma.category.findMany({
+      where: restricted ? { id: { in: allowedCategoryIds! } } : undefined,
       orderBy: { name: "asc" },
       skip: offset,
       take: take + 1,
@@ -142,7 +164,12 @@ export async function getPosCategoriesPage({
       },
     }),
     offset === 0
-      ? prisma.product.count({ where: { status: "ACTIVE" } })
+      ? prisma.product.count({
+          where: {
+            status: "ACTIVE",
+            ...(restricted ? { categoryId: { in: allowedCategoryIds! } } : {}),
+          },
+        })
       : Promise.resolve(0),
   ]);
 
@@ -173,6 +200,7 @@ export async function getPosProducts({
   inStockOnly = false,
   customerId,
   take = POS_PRODUCTS_PAGE_SIZE,
+  allowedCategoryIds,
 }: {
   offset?: number;
   categoryId?: string | null;
@@ -182,11 +210,14 @@ export async function getPosProducts({
   /** Required for the "customerFrequent" sort; ignored otherwise. */
   customerId?: string | null;
   take?: number;
+  /** A configured caisse's category list; empty/undefined = every category. */
+  allowedCategoryIds?: string[] | null;
 }) {
   if (sort === "customerFrequent" && customerId) {
     return getPosProductsByCustomerHistory({
       customerId,
       categoryId,
+      allowedCategoryIds,
       q,
       inStockOnly,
       offset,
@@ -194,7 +225,7 @@ export async function getPosProducts({
     });
   }
 
-  const where = productWhere(categoryId, q, inStockOnly);
+  const where = productWhere(categoryId, q, inStockOnly, allowedCategoryIds);
   const effectiveSort: PosProductSort =
     sort === "customerFrequent" ? "best" : sort;
 
@@ -226,6 +257,7 @@ export async function getPosProducts({
 async function getPosProductsByCustomerHistory({
   customerId,
   categoryId,
+  allowedCategoryIds,
   q,
   inStockOnly,
   offset,
@@ -233,15 +265,23 @@ async function getPosProductsByCustomerHistory({
 }: {
   customerId: string;
   categoryId?: string | null;
+  allowedCategoryIds?: string[] | null;
   q?: string | null;
   inStockOnly?: boolean;
   offset: number;
   take: number;
 }) {
-  const where = productWhere(categoryId, q, inStockOnly);
+  const where = productWhere(categoryId, q, inStockOnly, allowedCategoryIds);
 
   const conditions: Prisma.Sql[] = [Prisma.sql`p.status = 'ACTIVE'`];
-  if (categoryId) conditions.push(Prisma.sql`p."categoryId" = ${categoryId}`);
+  const scope = resolveCategoryScope(categoryId, allowedCategoryIds);
+  if (scope) {
+    conditions.push(
+      scope.length > 0
+        ? Prisma.sql`p."categoryId" IN (${Prisma.join(scope)})`
+        : Prisma.sql`FALSE`,
+    );
+  }
   if (inStockOnly) conditions.push(Prisma.sql`p.quantity > 0`);
   const search = q?.trim();
   if (search) {
@@ -300,11 +340,19 @@ async function getPosProductsByCustomerHistory({
   };
 }
 
-export async function getPosProductByBarcode(barcode: string) {
+export async function getPosProductByBarcode(
+  barcode: string,
+  allowedCategoryIds?: string[] | null,
+) {
   const trimmed = barcode.trim();
   if (!trimmed) return null;
+  const scope = resolveCategoryScope(null, allowedCategoryIds);
   const row = await prisma.product.findFirst({
-    where: { barcode: trimmed, status: "ACTIVE" },
+    where: {
+      barcode: trimmed,
+      status: "ACTIVE",
+      ...(scope ? { categoryId: { in: scope } } : {}),
+    },
     select: PRODUCT_SELECT,
   });
   return row ? mapProduct(row) : null;

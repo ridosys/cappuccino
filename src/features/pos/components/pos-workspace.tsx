@@ -97,6 +97,7 @@ export function PosWorkspace({
   initialCategories,
   initialProducts,
   initialCustomers,
+  fixedCustomer = null,
 }: {
   adminName: string;
   logoUrl: string | null;
@@ -105,14 +106,19 @@ export function PosWorkspace({
   initialCategories: CategoryFeed;
   initialProducts: ProductFeed;
   initialCustomers: { items: PosCustomer[]; hasMore: boolean };
+  /** Set when the cashier is locked to a configured caisse: the customer is
+   * fixed, the customer step is skipped, and it can't be changed. */
+  fixedCustomer?: PosCustomer | null;
 }) {
   const { t } = useLocale();
 
   // Server and the first client render always start from the same defaults
   // (no reading of sessionStorage during render) — the saved in-progress
   // sale is applied after mount, below, so there's no hydration mismatch.
-  const [step, setStep] = useState<"customer" | "sell">("customer");
-  const [customer, setCustomer] = useState<PosCustomer | null>(null);
+  const [step, setStep] = useState<"customer" | "sell">(
+    fixedCustomer ? "sell" : "customer",
+  );
+  const [customer, setCustomer] = useState<PosCustomer | null>(fixedCustomer);
   const [lines, setLines] = useState<CartLine[]>([]);
   const [saleToken, setSaleToken] = useState(() => crypto.randomUUID());
   const [sale, setSale] = useState<SaleResult | null>(null);
@@ -150,14 +156,20 @@ export function PosWorkspace({
   // Restore the in-progress sale (survives the full reload a language
   // change triggers, and an accidental refresh). setState is deferred a
   // tick so it doesn't run synchronously inside the effect.
+  const fixedCustomerRef = useRef(fixedCustomer);
   useEffect(() => {
     const saved = readPosSession();
+    const locked = fixedCustomerRef.current;
     const savedPanelLayout = readPanelLayout();
     const id = setTimeout(() => {
       setPanelLayout(savedPanelLayout);
       if (saved) {
         if (saved.step) setStep(saved.step);
         if ("customer" in saved) setCustomer(saved.customer ?? null);
+        if (locked) {
+          setCustomer(locked);
+          setStep("sell");
+        }
         if (saved.lines) setLines(saved.lines);
         if (saved.saleToken) setSaleToken(saved.saleToken);
         if ("resumedHeldId" in saved)
@@ -330,14 +342,14 @@ export function PosWorkspace({
   function resetSale() {
     clearPosSession();
     setLines([]);
-    setCustomer(null);
+    setCustomer(fixedCustomer);
     setSale(null);
     setResumedHeldId(null);
     setDialogProduct(null);
     setSaleToken(crypto.randomUUID());
     setActiveCategory("ALL");
     setActiveCategoryName("");
-    setStep("customer");
+    setStep(fixedCustomer ? "sell" : "customer");
   }
 
   // "Edit sale" from the success dialog: the invoice has just been reversed
@@ -426,7 +438,7 @@ export function PosWorkspace({
   }
 
   function handleResume(held: HeldSale) {
-    setCustomer(held.customer);
+    setCustomer(fixedCustomer ?? held.customer);
     setLines(held.lines);
     setResumedHeldId(held.id);
     setSaleToken(crypto.randomUUID());
@@ -573,6 +585,7 @@ export function PosWorkspace({
           <ResizablePanel id="cart" defaultSize={`${panelLayout?.cart ?? 30}%`} minSize="18%" maxSize="45%">
             <CartPanel
               customer={customer}
+              customerLocked={!!fixedCustomer}
               lines={lines}
               isPending={isPending}
               onChangeCustomer={() => setStep("customer")}

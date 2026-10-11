@@ -84,6 +84,7 @@ export const DASHBOARD_ACCESS_PERMISSIONS: PermissionKey[] = [
   "RETURNS_VIEW",
   "USERS_MANAGE",
   "SETTINGS_MANAGE",
+  "POS_CONFIGURE",
 ];
 
 export function canAccessDashboard(): Promise<boolean> {

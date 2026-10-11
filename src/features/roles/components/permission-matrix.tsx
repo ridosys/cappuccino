@@ -95,7 +95,10 @@ export function PermissionMatrix({
     if (checked) next.add(permission);
     else next.delete(permission);
 
-    if (permission === "POS_VIEW" && !checked) next.delete("POS_MANAGE");
+    if (permission === "POS_VIEW" && !checked) {
+      next.delete("POS_MANAGE");
+      next.delete("POS_CONFIGURE");
+    }
 
     onChange(Array.from(next));
   }
@@ -286,6 +289,23 @@ export function PermissionMatrix({
                 aria-label={t.roles.posManageLabel}
               />
               <span className="font-medium">{t.roles.posManageLabel}</span>
+            </label>
+          )}
+
+          {posOn && (
+            <label
+              className={cn(
+                "flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm",
+                fullAccess && "opacity-70",
+              )}
+            >
+              <Checkbox
+                disabled={fullAccess}
+                checked={isChecked("POS_CONFIGURE")}
+                onCheckedChange={(checked) => toggle("POS_CONFIGURE", checked)}
+                aria-label={t.roles.posConfigureLabel}
+              />
+              <span className="font-medium">{t.roles.posConfigureLabel}</span>
             </label>
           )}
         </>

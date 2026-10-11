@@ -13,6 +13,7 @@ import type { CartLine } from "./types";
 
 export function CartPanel({
   customer,
+  customerLocked = false,
   lines,
   isPending,
   onChangeCustomer,
@@ -24,6 +25,8 @@ export function CartPanel({
   onPay,
 }: {
   customer: PosCustomer;
+  /** A configured caisse has a fixed customer that can't be changed. */
+  customerLocked?: boolean;
   lines: CartLine[];
   isPending: boolean;
   onChangeCustomer: () => void;
@@ -52,18 +55,22 @@ export function CartPanel({
             {customer.phone}
           </p>
         </div>
-        <Button type="button" variant="outline" size="xs" onClick={onChangeCustomer}>
-          {t.pos.changeCustomer}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-xs"
-          onClick={onClearCustomer}
-          aria-label={t.pos.changeCustomer}
-        >
-          <X />
-        </Button>
+        {!customerLocked && (
+          <>
+            <Button type="button" variant="outline" size="xs" onClick={onChangeCustomer}>
+              {t.pos.changeCustomer}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              onClick={onClearCustomer}
+              aria-label={t.pos.changeCustomer}
+            >
+              <X />
+            </Button>
+          </>
+        )}
       </div>
 
       {/* Cart header */}

@@ -18,6 +18,7 @@ import {
   Palette,
   Send,
   type LucideIcon,
+  Store,
 } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { PermissionKey } from "@/lib/permission-modules";
@@ -178,6 +179,12 @@ export function getAdminNavGroups(
           label: t.admin.roles,
           icon: ShieldCheck,
           permission: "USERS_MANAGE",
+        },
+        {
+          href: "/dashboard/settings/caisses",
+          label: t.admin.posRegisters,
+          icon: Store,
+          permission: "POS_CONFIGURE",
         },
         {
           href: "/dashboard/settings/appearance",
