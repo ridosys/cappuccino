@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -19,7 +20,10 @@ export {
   type PermissionModuleKey,
 } from "@/lib/permission-modules";
 
-export async function getEffectivePermissions(
+// Request-scoped memoization only (React.cache): the layout, the page and the
+// action/handler all ask for the same admin's permissions in one request, but
+// nothing is shared across requests, so a role change applies immediately.
+export const getEffectivePermissions = cache(async function (
   adminId: string,
 ): Promise<Set<PermissionKey> | "full"> {
   const admin = await prisma.admin.findUnique({
@@ -37,7 +41,7 @@ export async function getEffectivePermissions(
   if (!admin || !admin.isActive) return new Set();
   if (admin.role.isFullAccess) return "full";
   return new Set(admin.role.permissions.map((p) => p.permission));
-}
+});
 
 /** For Server Components deciding what to render (nav items, whole pages). */
 export async function hasPermission(
