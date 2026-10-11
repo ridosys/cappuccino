@@ -191,7 +191,7 @@ export default async function CustomerProfilePage({
             variant="outline"
             size="sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/customers?edit=${customer.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/customers?edit=${customer.id}`} />}
           >
             {t.customers.editCustomerInfo}
           </Button>
@@ -306,7 +306,7 @@ export default async function CustomerProfilePage({
               <Button
                 variant="outline"
                 nativeButton={false}
-                render={<Link href={`${basePath}?tab=statement`} />}
+                render={<Link prefetch={false} href={`${basePath}?tab=statement`} />}
               >
                 <BarChart3 className="size-4" />
                 {t.customerStatement.tabStatement}
@@ -315,7 +315,7 @@ export default async function CustomerProfilePage({
               <Button
                 variant="outline"
                 nativeButton={false}
-                render={<Link href={basePath} />}
+                render={<Link prefetch={false} href={basePath} />}
               >
                 <LayoutDashboard className="size-4" />
                 {t.customerStatement.tabOverview}

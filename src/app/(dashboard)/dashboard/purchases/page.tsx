@@ -38,14 +38,14 @@ export default async function PurchasesPage({
             <Button
               variant="outline"
               nativeButton={false}
-              render={<Link href="/dashboard/purchases/scan" />}
+              render={<Link prefetch={false} href="/dashboard/purchases/scan" />}
             >
               <ScanLine className="size-4" />
               {t.purchaseScan.actionButton}
             </Button>
             <Button
               nativeButton={false}
-              render={<Link href="/dashboard/purchases/new" />}
+              render={<Link prefetch={false} href="/dashboard/purchases/new" />}
             >
               <Plus className="size-4" />
               {t.purchases.addButton}

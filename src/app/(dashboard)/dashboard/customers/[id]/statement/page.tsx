@@ -167,7 +167,7 @@ export default async function CustomerStatementPage({
                 statement.invoices.map((invoice) => (
                   <tr key={invoice.id} className="border-t">
                     <td className="px-4 py-3 font-medium print:py-2" dir="ltr">
-                      <Link
+                      <Link prefetch={false}
                         href={`/dashboard/invoices/${invoice.id}`}
                         className="hover:text-primary hover:underline print:text-foreground print:no-underline"
                       >

@@ -63,7 +63,7 @@ export function StatCard({
 
   if (href) {
     return (
-      <Link href={href} className="block">
+      <Link prefetch={false} href={href} className="block">
         {card}
       </Link>
     );

@@ -785,7 +785,7 @@ export function InvoiceForm({
                       className="h-auto cursor-pointer gap-1 px-2 py-1 text-xs"
                       nativeButton={false}
                       render={
-                        <Link href={`/dashboard/customers/${customerId}`} />
+                        <Link prefetch={false} href={`/dashboard/customers/${customerId}`} />
                       }
                     >
                       <UserCircle className="size-3.5" />

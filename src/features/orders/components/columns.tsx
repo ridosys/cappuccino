@@ -72,7 +72,7 @@ export function getOrderColumns(t: Dictionary, locale: Locale): ColumnDef<OrderR
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/orders/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/orders/${row.original.id}`} />}
           >
             <Eye className="size-4" />
           </Button>

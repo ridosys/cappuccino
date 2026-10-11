@@ -96,7 +96,7 @@ export function getInvoiceColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/invoices/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/invoices/${row.original.id}`} />}
           >
             <Eye className="size-4" />
           </Button>
@@ -105,7 +105,7 @@ export function getInvoiceColumns(
             size="icon-sm"
             nativeButton={false}
             render={
-              <Link
+              <Link prefetch={false}
                 href={`/dashboard/invoices/${row.original.id}/print?lang=${row.original.language.toLowerCase()}`}
               />
             }

@@ -54,7 +54,7 @@ export default async function ExpensesPage({
         icon={Receipt}
         description={`${t.expenses.totalLabel}: ${formatCurrency(Number(totalAmount), locale)}`}
         action={
-          <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
             <Plus className="size-4" />
             {t.expenses.addButton}
           </Button>

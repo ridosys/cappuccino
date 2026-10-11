@@ -43,7 +43,7 @@ export default async function RolesPage({
         title={t.admin.roles}
         icon={ShieldCheck}
         action={
-          <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
             <Plus className="size-4" />
             {t.roles.addButton}
           </Button>

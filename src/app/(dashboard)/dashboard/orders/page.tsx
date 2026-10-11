@@ -57,7 +57,7 @@ export default async function OrdersPage({
         title={t.admin.orders}
         icon={ShoppingCart}
         action={
-          <Button nativeButton={false} render={<Link href="/dashboard/orders/new" />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href="/dashboard/orders/new" />}>
             <Plus className="size-4" />
             {t.orders.addButton}
           </Button>

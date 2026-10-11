@@ -66,7 +66,7 @@ export function RolesTable({ data }: { data: RoleRow[] }) {
                   variant="ghost"
                   size="icon-sm"
                   nativeButton={false}
-                  render={<Link href={editHref(role.id)} />}
+                  render={<Link prefetch={false} href={editHref(role.id)} />}
                 >
                   <Pencil className="size-4" />
                 </Button>

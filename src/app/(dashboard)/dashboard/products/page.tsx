@@ -78,7 +78,7 @@ export default async function ProductsPage({
           <div className="flex gap-2">
             <ProductBarcodeLookup />
             <ImportProductsDialog />
-            <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+            <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
               <Plus className="size-4" />
               {t.products.addProduct}
             </Button>

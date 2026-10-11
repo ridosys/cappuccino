@@ -52,7 +52,7 @@ export function DataTablePagination({
           <Button
             variant="outline"
             size="sm"
-            nativeButton={false} render={<Link href={hrefForPage(page - 1)} />}
+            nativeButton={false} render={<Link prefetch={false} href={hrefForPage(page - 1)} />}
           >
             <ChevronLeft className="size-4 rtl:rotate-180" />
             {t.common.previous}
@@ -67,7 +67,7 @@ export function DataTablePagination({
           <Button
             variant="outline"
             size="sm"
-            nativeButton={false} render={<Link href={hrefForPage(page + 1)} />}
+            nativeButton={false} render={<Link prefetch={false} href={hrefForPage(page + 1)} />}
           >
             {t.common.next}
             <ChevronRight className="size-4 rtl:rotate-180" />

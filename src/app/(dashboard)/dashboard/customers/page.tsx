@@ -77,7 +77,7 @@ export default async function CustomersPage({
         title={t.admin.customers}
         icon={Users}
         action={
-          <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
             <Plus className="size-4" />
             {t.customers.addButton}
           </Button>

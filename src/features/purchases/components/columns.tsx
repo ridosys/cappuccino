@@ -86,7 +86,7 @@ export function getPurchaseOrderColumns(
             title={t.purchases.printButton}
             nativeButton={false}
             render={
-              <Link href={`/dashboard/purchases/${row.original.id}/print`} />
+              <Link prefetch={false} href={`/dashboard/purchases/${row.original.id}/print`} />
             }
           >
             <Printer className="size-4" />
@@ -95,7 +95,7 @@ export function getPurchaseOrderColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/purchases/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/purchases/${row.original.id}`} />}
           >
             <Eye className="size-4" />
           </Button>

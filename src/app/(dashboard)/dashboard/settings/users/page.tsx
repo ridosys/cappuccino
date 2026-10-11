@@ -57,7 +57,7 @@ export default async function UsersPage({
         title={t.admin.users}
         icon={UserCog}
         action={
-          <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
             <Plus className="size-4" />
             {t.users.addButton}
           </Button>

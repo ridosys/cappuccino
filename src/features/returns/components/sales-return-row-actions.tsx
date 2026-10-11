@@ -23,7 +23,7 @@ export function SalesReturnRowActions({
         variant="ghost"
         size="icon-sm"
         nativeButton={false}
-        render={<Link href={`/dashboard/sales-returns/${id}`} />}
+        render={<Link prefetch={false} href={`/dashboard/sales-returns/${id}`} />}
         title={t.returns.viewDetails}
       >
         <Eye className="size-4" />

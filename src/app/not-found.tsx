@@ -19,7 +19,7 @@ export default async function NotFound() {
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button nativeButton={false} render={<Link href="/" />}>
+        <Button nativeButton={false} render={<Link prefetch={false} href="/" />}>
           <Home className="size-4" />
           {t.notFound.backHome}
         </Button>

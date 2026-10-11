@@ -13,7 +13,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   await requirePageAccess("RETURNS_VIEW");
   const p = await searchParams; const page = Math.max(1, Number(p.page) || 1); const query = p.q?.trim();
   const [{ items, total, pageSize },t,locale] = await Promise.all([getSalesReturnsPage({ query, page }),getDictionary(),getLocale()]);
-  return <div className="space-y-6"><PageHeader title={t.returns.salesTitle} description={t.returns.salesDescription} icon={RotateCcw} action={<Button nativeButton={false} render={<Link href="/dashboard/sales-returns/new" />}><Plus className="size-4" />{t.returns.newReturn}</Button>} /><DataTableSearch placeholder={t.returns.salesSearch} />
+  return <div className="space-y-6"><PageHeader title={t.returns.salesTitle} description={t.returns.salesDescription} icon={RotateCcw} action={<Button nativeButton={false} render={<Link prefetch={false} href="/dashboard/sales-returns/new" />}><Plus className="size-4" />{t.returns.newReturn}</Button>} /><DataTableSearch placeholder={t.returns.salesSearch} />
     <SalesReturnsTable
       data={items.map((r) => ({
         id: r.id,

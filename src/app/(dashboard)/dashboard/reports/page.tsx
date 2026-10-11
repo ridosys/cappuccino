@@ -61,7 +61,7 @@ export default async function ReportsPage() {
       <PageHeader title={t.admin.reports} icon={BarChart3} />
       <div className="grid gap-4 sm:grid-cols-2">
         {REPORTS.map((report) => (
-          <Link
+          <Link prefetch={false}
             key={report.href}
             href={report.href}
             className="group flex items-start gap-4 rounded-xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"

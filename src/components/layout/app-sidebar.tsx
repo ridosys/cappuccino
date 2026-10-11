@@ -151,7 +151,7 @@ export function AppSidebar({
         }}
       />
       <SidebarHeader>
-        <Link
+        <Link prefetch={false}
           href="/dashboard"
           onClick={() => setOpenMobile(false)}
           className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 outline-hidden transition-colors hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
@@ -186,7 +186,7 @@ export function AppSidebar({
                         "rounded-lg data-active:bg-primary data-active:font-semibold data-active:text-primary-foreground data-active:shadow-sm data-active:hover:bg-primary data-active:hover:text-primary-foreground",
                       )}
                       render={
-                        <Link
+                        <Link prefetch={false}
                           href={item.href}
                           onClick={() => setOpenMobile(false)}
                         >
@@ -294,7 +294,7 @@ export function AppSidebar({
                   <>
                     <DropdownMenuItem
                       render={
-                        <Link
+                        <Link prefetch={false}
                           href="/caisse"
                           onClick={() => setOpenMobile(false)}
                         />

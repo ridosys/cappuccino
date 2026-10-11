@@ -137,7 +137,7 @@ export function StatementFilterBar({
           variant="outline"
           nativeButton={false}
           render={
-            <Link
+            <Link prefetch={false}
               href={`/dashboard/customers/${customerId}/statement?${printParams.toString()}`}
               target="_blank"
             />

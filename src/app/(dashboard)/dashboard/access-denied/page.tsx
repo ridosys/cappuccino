@@ -24,7 +24,7 @@ export default async function AccessDeniedPage() {
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button nativeButton={false} render={<Link href={backHref} />}>
+        <Button nativeButton={false} render={<Link prefetch={false} href={backHref} />}>
           <Home className="size-4" />
           {t.accessDenied.backHome}
         </Button>

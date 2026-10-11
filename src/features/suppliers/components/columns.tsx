@@ -50,7 +50,7 @@ export function getSupplierColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/suppliers/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/suppliers/${row.original.id}`} />}
             title={t.suppliers.viewProfile}
           >
             <UserCircle className="size-4" />
@@ -58,7 +58,7 @@ export function getSupplierColumns(
           <Button
             variant="ghost"
             size="icon-sm"
-            nativeButton={false} render={<Link href={editHref(row.original.id)} />}
+            nativeButton={false} render={<Link prefetch={false} href={editHref(row.original.id)} />}
           >
             <Pencil className="size-4" />
           </Button>

@@ -35,7 +35,7 @@ function getColumns(t: Dictionary, locale: Locale): ColumnDef<SalesReturnRow>[] 
       accessorKey: "returnNumber",
       header: t.returns.returnNumber,
       cell: ({ row }) => (
-        <Link
+        <Link prefetch={false}
           className="font-medium hover:underline"
           href={`/dashboard/sales-returns/${row.original.id}`}
         >

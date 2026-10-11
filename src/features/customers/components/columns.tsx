@@ -172,7 +172,7 @@ export function getCustomerColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/customers/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/customers/${row.original.id}`} />}
             title={t.customers.viewProfile}
           >
             <UserCircle className="size-4" />
@@ -180,7 +180,7 @@ export function getCustomerColumns(
           <Button
             variant="ghost"
             size="icon-sm"
-            nativeButton={false} render={<Link href={editHref(row.original.id)} />}
+            nativeButton={false} render={<Link prefetch={false} href={editHref(row.original.id)} />}
           >
             <Pencil className="size-4" />
           </Button>

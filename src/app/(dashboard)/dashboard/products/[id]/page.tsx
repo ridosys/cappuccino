@@ -85,7 +85,7 @@ export default async function ProductProfilePage({
               variant="outline"
               nativeButton={false}
               render={
-                <Link
+                <Link prefetch={false}
                   href={`/dashboard/purchases/new?productId=${product.id}`}
                 />
               }
@@ -96,7 +96,7 @@ export default async function ProductProfilePage({
             <Button
               variant="outline"
               nativeButton={false}
-              render={<Link href={`/dashboard/products?edit=${product.id}`} />}
+              render={<Link prefetch={false} href={`/dashboard/products?edit=${product.id}`} />}
             >
               {t.common.edit}
             </Button>
@@ -306,7 +306,7 @@ export default async function ProductProfilePage({
                 {orderItems.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>
-                      <Link
+                      <Link prefetch={false}
                         href={`/dashboard/orders/${item.order.id}`}
                         className="font-medium text-primary hover:underline"
                         dir="ltr"
@@ -379,7 +379,7 @@ export default async function ProductProfilePage({
                             size="icon-sm"
                             nativeButton={false}
                             render={
-                              <Link
+                              <Link prefetch={false}
                                 href={`/dashboard/customers/${customer.customerId}`}
                               />
                             }

@@ -53,7 +53,7 @@ export default async function BrandProfilePage({
             <Button
               variant="outline"
               nativeButton={false}
-              render={<Link href={`/dashboard/brands?edit=${brand.id}`} />}
+              render={<Link prefetch={false} href={`/dashboard/brands?edit=${brand.id}`} />}
             >
               {t.common.edit}
             </Button>

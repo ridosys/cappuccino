@@ -42,7 +42,7 @@ export default async function InvoicesPage({
         icon={FileText}
         description={t.invoices.pageDescription}
         action={
-          <Button nativeButton={false} render={<Link href="/dashboard/invoices/new" />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href="/dashboard/invoices/new" />}>
             <Plus className="size-4" />
             {t.invoices.addButton}
           </Button>

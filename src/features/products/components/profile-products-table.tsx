@@ -53,7 +53,7 @@ export function ProfileProductsTable({
           return (
             <TableRow key={product.id}>
               <TableCell>
-                <Link
+                <Link prefetch={false}
                   href={`/dashboard/products/${product.id}`}
                   className="font-medium text-primary hover:underline"
                 >

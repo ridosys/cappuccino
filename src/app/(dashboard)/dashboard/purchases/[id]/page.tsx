@@ -71,7 +71,7 @@ export default async function PurchaseOrderDetailPage({
         icon={ClipboardList}
         action={
           <div className="flex flex-wrap gap-2">
-            {order.status === "RECEIVED" && <Button variant="outline" nativeButton={false} render={<Link href={`/dashboard/purchase-returns/new?purchaseId=${order.id}`} />}><Undo2 className="size-4" />{t.returns.newReturn}</Button>}
+            {order.status === "RECEIVED" && <Button variant="outline" nativeButton={false} render={<Link prefetch={false} href={`/dashboard/purchase-returns/new?purchaseId=${order.id}`} />}><Undo2 className="size-4" />{t.returns.newReturn}</Button>}
             <DeletePurchaseOrderButton
               purchaseOrderId={order.id}
               orderNumber={order.orderNumber}
@@ -146,7 +146,7 @@ export default async function PurchaseOrderDetailPage({
               ) : (
                 <div className="space-y-2">
                   {order.returns.map((r) => (
-                    <Link
+                    <Link prefetch={false}
                       key={r.id}
                       href={`/dashboard/purchase-returns/${r.id}`}
                       className="flex justify-between rounded-md border p-3 text-sm hover:bg-muted"
@@ -174,7 +174,7 @@ export default async function PurchaseOrderDetailPage({
                 className="h-auto cursor-pointer gap-1 px-2 py-1 text-xs"
                 nativeButton={false}
                 render={
-                  <Link href={`/dashboard/suppliers/${order.supplierId}`} />
+                  <Link prefetch={false} href={`/dashboard/suppliers/${order.supplierId}`} />
                 }
               >
                 <UserCircle className="size-3.5" />
@@ -262,7 +262,7 @@ export default async function PurchaseOrderDetailPage({
                 className="w-full"
                 nativeButton={false}
                 render={
-                  <Link href={`/dashboard/purchases/${order.id}/print`} />
+                  <Link prefetch={false} href={`/dashboard/purchases/${order.id}/print`} />
                 }
               >
                 <Printer className="size-4" />

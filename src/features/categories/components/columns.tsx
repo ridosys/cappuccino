@@ -75,7 +75,7 @@ export function getCategoryColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/categories/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/categories/${row.original.id}`} />}
             title={t.categories.viewProfile}
           >
             <Eye className="size-4" />
@@ -84,7 +84,7 @@ export function getCategoryColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={editHref(row.original.id)} />}
+            render={<Link prefetch={false} href={editHref(row.original.id)} />}
           >
             <Pencil className="size-4" />
           </Button>

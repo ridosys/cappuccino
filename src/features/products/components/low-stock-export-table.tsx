@@ -331,7 +331,7 @@ export function LowStockExportTable({
                       variant="ghost"
                       size="icon-sm"
                       nativeButton={false}
-                      render={<Link href={`/dashboard/products/${product.id}`} />}
+                      render={<Link prefetch={false} href={`/dashboard/products/${product.id}`} />}
                       title={t.customers.viewProfile}
                     >
                       <Eye className="size-4" />

@@ -60,7 +60,7 @@ export default async function InventoryPage({
             <Button
               variant="outline"
               nativeButton={false}
-              render={<Link href="/dashboard/inventory/low-stock" />}
+              render={<Link prefetch={false} href="/dashboard/inventory/low-stock" />}
             >
               <AlertTriangle className="size-4 text-destructive" />
               {t.inventory.lowStockPageTitle}
@@ -81,7 +81,7 @@ export default async function InventoryPage({
               variant="outline"
               size="sm"
               nativeButton={false}
-              render={<Link href="/dashboard/inventory/low-stock" />}
+              render={<Link prefetch={false} href="/dashboard/inventory/low-stock" />}
             >
               <FileDown className="size-4" />
               {t.reports.exportPdf} / {t.reports.exportExcel}
@@ -132,7 +132,7 @@ export default async function InventoryPage({
                             size="icon-sm"
                             nativeButton={false}
                             render={
-                              <Link href={`/dashboard/products/${product.id}`} />
+                              <Link prefetch={false} href={`/dashboard/products/${product.id}`} />
                             }
                             title={t.customers.viewProfile}
                           >

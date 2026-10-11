@@ -18,7 +18,7 @@ export function InvoiceLockedNotice({
   return (
     <div className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
       <p className="text-amber-800 dark:text-amber-400">{message}</p>
-      <Link
+      <Link prefetch={false}
         href={`/dashboard/invoices/${invoiceId}`}
         className="inline-flex items-center gap-1.5 font-medium text-primary underline underline-offset-2"
       >

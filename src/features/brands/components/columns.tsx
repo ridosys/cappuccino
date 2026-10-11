@@ -67,7 +67,7 @@ export function getBrandColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={`/dashboard/brands/${row.original.id}`} />}
+            render={<Link prefetch={false} href={`/dashboard/brands/${row.original.id}`} />}
             title={t.brands.viewProfile}
           >
             <Eye className="size-4" />
@@ -75,7 +75,7 @@ export function getBrandColumns(
           <Button
             variant="ghost"
             size="icon-sm"
-            nativeButton={false} render={<Link href={editHref(row.original.id)} />}
+            nativeButton={false} render={<Link prefetch={false} href={editHref(row.original.id)} />}
           >
             <Pencil className="size-4" />
           </Button>

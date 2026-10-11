@@ -70,7 +70,7 @@ export function RankedListCard({
               return (
                 <li key={item.key}>
                   {item.href ? (
-                    <Link
+                    <Link prefetch={false}
                       href={item.href}
                       className="block rounded-lg transition-colors hover:bg-muted/50"
                     >

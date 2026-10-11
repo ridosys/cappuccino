@@ -157,7 +157,7 @@ export default async function SupplierProfilePage({
               variant="outline"
               size="sm"
               nativeButton={false}
-              render={<Link href={`/dashboard/suppliers?edit=${supplier.id}`} />}
+              render={<Link prefetch={false} href={`/dashboard/suppliers?edit=${supplier.id}`} />}
             >
               {t.suppliers.editSupplierInfo}
             </Button>

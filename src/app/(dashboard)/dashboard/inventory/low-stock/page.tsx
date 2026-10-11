@@ -34,7 +34,7 @@ export default async function LowStockProductsPage() {
           <Button
             variant="outline"
             nativeButton={false}
-            render={<Link href="/dashboard/inventory" />}
+            render={<Link prefetch={false} href="/dashboard/inventory" />}
           >
             <ArrowRight className="size-4 rtl:rotate-180" />
             {t.admin.inventory}

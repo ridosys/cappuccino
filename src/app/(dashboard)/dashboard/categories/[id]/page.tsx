@@ -54,7 +54,7 @@ export default async function CategoryProfilePage({
             <Button
               variant="outline"
               nativeButton={false}
-              render={<Link href={`/dashboard/categories?edit=${category.id}`} />}
+              render={<Link prefetch={false} href={`/dashboard/categories?edit=${category.id}`} />}
             >
               {t.common.edit}
             </Button>

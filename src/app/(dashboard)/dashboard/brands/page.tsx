@@ -54,7 +54,7 @@ export default async function BrandsPage({
         title={t.admin.brands}
         icon={Tags}
         action={
-          <Button nativeButton={false} render={<Link href={buildHref({ new: "1" })} />}>
+          <Button nativeButton={false} render={<Link prefetch={false} href={buildHref({ new: "1" })} />}>
             <Plus className="size-4" />
             {t.brands.addButton}
           </Button>

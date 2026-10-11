@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; q?: string }> }) {
   await requirePageAccess("RETURNS_VIEW");
   const p = await searchParams; const page = Math.max(1, Number(p.page) || 1); const query = p.q?.trim(); const [{ items, total, pageSize },t,locale] = await Promise.all([getPurchaseReturnsPage({ query, page }),getDictionary(),getLocale()]);
-  return <div className="space-y-6"><PageHeader title={t.returns.purchaseTitle} description={t.returns.purchaseDescription} icon={Undo2} action={<Button nativeButton={false} render={<Link href="/dashboard/purchase-returns/new" />}><Plus className="size-4" />{t.returns.newReturn}</Button>} /><DataTableSearch placeholder={t.returns.purchaseSearch} />
+  return <div className="space-y-6"><PageHeader title={t.returns.purchaseTitle} description={t.returns.purchaseDescription} icon={Undo2} action={<Button nativeButton={false} render={<Link prefetch={false} href="/dashboard/purchase-returns/new" />}><Plus className="size-4" />{t.returns.newReturn}</Button>} /><DataTableSearch placeholder={t.returns.purchaseSearch} />
   <PurchaseReturnsTable
     data={items.map((r) => ({
       id: r.id,

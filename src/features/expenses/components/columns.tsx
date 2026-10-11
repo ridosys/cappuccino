@@ -67,7 +67,7 @@ export function getExpenseColumns(
             variant="ghost"
             size="icon-sm"
             nativeButton={false}
-            render={<Link href={editHref(row.original.id)} />}
+            render={<Link prefetch={false} href={editHref(row.original.id)} />}
           >
             <Pencil className="size-4" />
           </Button>

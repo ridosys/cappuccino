@@ -78,7 +78,7 @@ export function ReturnSourcePicker({
             </p>
           ) : !loading ? (
             results.map((source) => (
-              <Link
+              <Link prefetch={false}
                 key={source.id}
                 href={`?${queryKey}=${source.id}`}
                 className={`block border-b px-4 py-3 text-sm last:border-b-0 hover:bg-muted ${
