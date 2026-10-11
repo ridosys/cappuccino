@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
+import { LogOut } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { canAccessDashboard, hasPermission } from "@/lib/permissions";
 import { getSystemSettings } from "@/features/settings/queries";
 import { getDictionary } from "@/i18n/server";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { BrandMark } from "@/components/shared/brand-mark";
+import { Button } from "@/components/ui/button";
+import { logout } from "@/features/auth/actions";
 import { LandingChooser } from "@/features/auth/components/landing-chooser";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +53,13 @@ export default async function ChoosePage() {
         </div>
 
         <LandingChooser canDashboard={canDashboard} canPos={canPos} />
+
+        <form action={logout} className="flex justify-center">
+          <Button type="submit" variant="ghost" size="sm" className="cursor-pointer">
+            <LogOut className="size-4" />
+            {t.pos.signOut}
+          </Button>
+        </form>
 
         <p className="text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} {settings.appName}
