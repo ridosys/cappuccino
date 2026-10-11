@@ -1,9 +1,7 @@
 // Harakat/tanwin/sukun/shadda (U+064B-U+0652) plus superscript alef (U+0670)
 const DIACRITICS = /[ً-ْٰ]/g;
 const TATWEEL = /ـ/g;
-// أ إ آ ٱ -> ا
 const ALEF_VARIANTS = /[أإآٱ]/g;
-// ى -> ي
 const ALEF_MAKSURA = /ى/g;
 
 export function normalizeArabicName(name: string): string {
